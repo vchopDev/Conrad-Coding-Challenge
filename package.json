@@ -1,0 +1,27 @@
+{
+  "name": "conrad-coding-challenge",
+  "version": "1.0.0",
+  "description": "Coding challenge for Conrand. The exercise consists in building a simple HTTP API.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node ./src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vchopDev/Conrad-Coding-Challenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vchopDev/Conrad-Coding-Challenge/issues"
+  },
+  "homepage": "https://github.com/vchopDev/Conrad-Coding-Challenge#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1"
+  }
+}
