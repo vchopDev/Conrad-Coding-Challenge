@@ -6,6 +6,8 @@ var router = Router();
 
 router.get("/", ZenController.GetZen);
 router.get("/repositories", RepoController.GetRepositories);
-router.post("/bookmarks/add", BookmarkController.CreateBookmark);
 router.get("/bookmarks", BookmarkController.GetAllBookmarks);
+router.post("/bookmarks/add", BookmarkController.CreateBookmark);
+router.put("/bookmarks/update", BookmarkController.UpdateBookmark);
+router.delete("/bookmarks/remove/:id", BookmarkController.RemoveBookmark)
 module.exports = router;

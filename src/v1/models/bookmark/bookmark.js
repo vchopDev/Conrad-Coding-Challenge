@@ -1,4 +1,4 @@
-class BookMark {
+class Bookmark {
   constructor(id, name, url) {
     this.id = id;
     this.name = name;
@@ -6,4 +6,4 @@ class BookMark {
   }
 }
 
-module.exports = BookMark;
+module.exports = Bookmark;
