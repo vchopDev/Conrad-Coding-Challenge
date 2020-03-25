@@ -7,8 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "start": "nodemon ./src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon ./src/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +21,21 @@
   "homepage": "https://github.com/vchopDev/Conrad-Coding-Challenge#readme",
   "dependencies": {
     "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "lowdb": "^1.0.0",
+    "mongoose": "^5.9.6",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.2"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }

@@ -1,16 +1,10 @@
-const axios = require("axios");
-var express = require("express");
-var router = express.Router();
+const { Router } = require("express");
+const RepoController = require("../controllers/repositories/repositoryController");
+const ZenController = require("../controllers/zen/zenController");
+const BookmarkController = require("../controllers/bookmarks/bookmarkController");
+var router = Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const result = await axios.get("https://api.github.com/zen");
-    if (!result || result.status !== 200) res.send({ message: "...ops!! Something got wrong, please retry a few minutes later" });
-
-    res.send(result.data);
-  } catch (err) {
-    //TODO:Log
-  }
-});
-
+// router.get("/", ZenController.GetZeN);
+router.get("/repositories", RepoController.GetRepositories);
+// router.post("/bookmarks/add", BookmarkController.CreateBookmark);
 module.exports = router;
