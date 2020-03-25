@@ -1,3 +1,9 @@
 {
-  "bookmarks": []
+  "bookmarks": [
+    {
+      "id": 20929025,
+      "name": "TypeScript",
+      "url": "https://github.com/microsoft/TypeScript"
+    }
+  ]
 }
