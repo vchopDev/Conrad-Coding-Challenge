@@ -7,36 +7,43 @@ const util = require("util");
 
 app.use(bodyParser.json());
 
-const GetBookmarks = async () => {
-  return await await request(app)
+const username = "test";
+const password = "12345678";
+
+const GetBookmarks = async (username, password) => {
+  return await request(app)
     .get("/v1/bookmarks")
+    .auth(username, password)
     .set("Accept", "application/json");
 };
 
-const CreateBookmark = async data => {
+const CreateBookmark = async (username, password, data) => {
   return await request(app)
     .post("/v1/bookmarks/add")
+    .auth(username, password)
     .send(data)
     .set("Accept", "application/json");
 };
 
-const UpdateBookmark = async data => {
+const UpdateBookmark = async (username, password, data) => {
   return await request(app)
     .put("/v1/bookmarks/update")
+    .auth(username, password)
     .send(data)
     .set("Accept", "application/json");
 };
 
-const RemoveBookmark = async id => {
+const RemoveBookmark = async (username, password, id) => {
   return await request(app)
     .delete(`/v1/bookmarks/remove/${id}`)
+    .auth(username, password)
     .set("Accept", "application/json");
 };
 
 describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
   describe("- BookmarkController", () => {
-    test("BookmarkController -> GET /v1/bookmarks should return 200", async done => {
-      const result = await GetBookmarks();
+    test("GET /v1/bookmarks should return 200", async done => {
+      const result = await GetBookmarks(username, password);
       expect(result.status).to.be.equal(200);
 
       const { body } = result;
@@ -46,10 +53,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> POST /v1/bookmarks/add should sould return 200  ", async done => {
+    test("POST /v1/bookmarks/add should sould return 200  ", async done => {
       const data = { bookmark: { id: "0000", name: "test", url: "test" } };
 
-      const result = await CreateBookmark(data);
+      const result = await CreateBookmark(username, password, data);
       expect(result.status).to.be.equal(200);
 
       const { body } = result;
@@ -60,32 +67,31 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> PUT /v1/bookmarks/update should return status 200", async done => {
+    test("PUT /v1/bookmarks/update should return status 200", async done => {
       let data = { bookmark: { id: "0000", name: "test", url: "test" } };
 
-      //Could be used to check data
-      const createdPayload = await CreateBookmark(data);
+      const createdPayload = await CreateBookmark(username, password, data);
       expect(createdPayload.status).to.be.equal(200);
       data = { bookmark: { id: "0000", name: "test-updated", url: "test" } };
 
-      const result = await UpdateBookmark(data);
+      const result = await UpdateBookmark(username, password, data);
       expect(result.status).to.be.equal(200);
       done();
     });
 
-    test("BookmarkController -> DELETE /v1/bookmarks/remove/:id should return status 200", async done => {
+    test("DELETE /v1/bookmarks/remove/:id should return status 200", async done => {
       let data = { bookmark: { id: "0000", name: "test", url: "test" } };
 
-      const createPayload = await CreateBookmark(data);
+      const createPayload = await CreateBookmark(username, password, data);
       expect(createPayload.status).to.be.equal(200);
 
-      const bookmarks = await GetBookmarks();
+      const bookmarks = await GetBookmarks(username, password);
       const { result } = bookmarks.body;
 
       expect(bookmarks.status).to.be.equal(200);
       expect(result.length).to.be.equal(1);
 
-      const removeResult = await RemoveBookmark(data.bookmark.id);
+      const removeResult = await RemoveBookmark(username, password, data.bookmark.id);
       expect(removeResult.status).to.be.equal(200);
 
       const { body } = removeResult;
@@ -93,10 +99,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark id  ", async done => {
+    test("POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark id  ", async done => {
       const data = { bookmark: { name: "test", url: "test" } };
 
-      const result = await CreateBookmark(data);
+      const result = await CreateBookmark(username, password, data);
       const { error } = result;
       expect(result.status).to.be.equal(400);
       const errorResult = JSON.parse(error.text);
@@ -104,10 +110,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark name  ", async done => {
+    test("POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark name  ", async done => {
       const data = { bookmark: { id: "0000", url: "test" } };
 
-      const result = await CreateBookmark(data);
+      const result = await CreateBookmark(username, password, data);
       const { error } = result;
       expect(result.status).to.be.equal(400);
       const errorResult = JSON.parse(error.text);
@@ -115,10 +121,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark url  ", async done => {
+    test("POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark url  ", async done => {
       const data = { bookmark: { id: "0000", name: "test" } };
 
-      const result = await CreateBookmark(data);
+      const result = await CreateBookmark(username, password, data);
       const { error } = result;
       expect(result.status).to.be.equal(400);
       const errorResult = JSON.parse(error.text);
@@ -126,11 +132,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-
-   test("BookmarkController -> PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark id  ", async done => {
+    test("PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark id  ", async done => {
       const data = { bookmark: { name: "test", url: "test" } };
 
-      const result = await UpdateBookmark(data);
+      const result = await UpdateBookmark(username, password, data);
       const { error } = result;
       expect(result.status).to.be.equal(400);
       const errorResult = JSON.parse(error.text);
@@ -138,10 +143,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark name  ", async done => {
+    test("PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark name  ", async done => {
       const data = { bookmark: { id: "0000", url: "test" } };
 
-      const result = await UpdateBookmark(data);
+      const result = await UpdateBookmark(username, password, data);
       const { error } = result;
       expect(result.status).to.be.equal(400);
       const errorResult = JSON.parse(error.text);
@@ -149,10 +154,10 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark url  ", async done => {
+    test("PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark url  ", async done => {
       const data = { bookmark: { id: "0000", name: "test" } };
 
-      const result = await UpdateBookmark(data);
+      const result = await UpdateBookmark(username, password, data);
       const { error } = result;
       expect(result.status).to.be.equal(400);
       const errorResult = JSON.parse(error.text);
@@ -160,23 +165,69 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       done();
     });
 
-    test("BookmarkController -> DELETE /v1/bookmarks/remove/:id should returns status 400 when data item is not present on db", async done => {
+    test("DELETE /v1/bookmarks/remove/:id should returns status 400 when data item is not present on db", async done => {
       let data = { bookmark: { id: "0000", name: "test", url: "test" } };
 
-      const createPayload = await CreateBookmark(data);
+      const createPayload = await CreateBookmark(username, password, data);
       expect(createPayload.status).to.be.equal(200);
 
-      const bookmarks = await GetBookmarks();
+      const bookmarks = await GetBookmarks(username, password);
       const { result } = bookmarks.body;
       expect(bookmarks.status).to.be.equal(200);
       expect(result.length).to.be.equal(1);
 
-      const removeResult = await RemoveBookmark(-1);
+      const removeResult = await RemoveBookmark(username, password, -1);
       expect(removeResult.status).to.be.equal(400);
 
       const { error } = removeResult;
       const errorResult = JSON.parse(error.text);
       expect(errorResult.error).to.be.equal("The id recevied has no bookmark associated with.");
+      done();
+    });
+
+    test("POST /v1/bookmarks/add should returns status 401 when user is unauthorized", async done => {
+      let data = { bookmark: { id: "0000", name: "test", url: "test" } };
+
+      const createPayload = await request(app)
+        .post("/v1/bookmarks/add")
+        .send(data)
+        .set("Accept", "application/json");
+      expect(createPayload.status).to.be.equal(401);
+      done();
+    });
+
+    test("PUT /v1/bookmarks/update should returns status 401 when user is unauthorized", async done => {
+      let data = { bookmark: { id: "0000", name: "test", url: "test" } };
+
+      const createPayload = await CreateBookmark(username, password, data);
+      expect(createPayload.status).to.be.equal(200);
+
+      const updatepayload = await request(app)
+        .put("/v1/bookmarks/update")
+        .send(data)
+        .set("Accept", "application/json");
+      expect(updatepayload.status).to.be.equal(401);
+      done();
+    });
+
+    test("DELETE /v1/bookmarks/remove should returns status 401 when user is unauthorized", async done => {
+      let data = { bookmark: { id: "0000", name: "test", url: "test" } };
+
+      const createPayload = await CreateBookmark(username, password, data);
+      expect(createPayload.status).to.be.equal(200);
+
+      const deletePayload = await request(app)
+        .delete(`/v1/bookmarks/remove/${data.id}`)
+        .set("Accept", "application/json");
+      expect(deletePayload.status).to.be.equal(401);
+      done();
+    });
+
+    test("GET /v1/bookmarks/ should returns status 401 when user is unauthorized", async done => {
+      const bookmarks = await request(app)
+        .get("/v1/bookmarks")
+        .set("Accept", "application/json");
+      expect(bookmarks.status).to.be.equal(401);
       done();
     });
   });

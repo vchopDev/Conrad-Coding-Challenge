@@ -1,16 +1,22 @@
 const app = require("../../../../src/server/index");
 const request = require("supertest");
+const chai = require("chai");
+const { expect } = chai;
 
-describe("- RepositoryCotroller", () => {
-  describe("- GET /v1/bookmarks", () => {
-    test("should return status 200, with json body", () => {
-      request(app)
-        .get("/v1/repositories/?search='typescript'")
-        .set("Accept", "application/json")
-        .expect("Content-Type", /json/)
-        .expect(200)
+const GetRepositories = async () => {
+  return await request(app)
+    .get("/v1/repositories/?search='typescript'")
+    .set("Accept", "application/json");
+};
+
+describe("- GET REPOSITORIES TEST", () => {
+  describe("- RepositoriesController", () => {
+    test("GET /v1/repositories/?search=", async () => {
+      const result = await GetRepositories();
+      expect(result.status).to.be.equal(200);
+      expect(result.body.count).to.be.equal(30)
     });
-  })
+  });
 });
 // describe("GET /v1/repositories/?search=", () => {
 //   it("", () => {
