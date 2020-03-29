@@ -1,54 +1,54 @@
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
-const Memory = require('lowdb/adapters/Memory')
-const db = low(new Memory());
+const repository = require("../../repositories/bookmark/repository");
 const Bookmark = require("../../models/bookmark/bookmark");
-db.defaults({ bookmarks: [] }).write();
-
 const CreateBookmark = async bookmark => {
-  const model = GetBookmark(bookmark);
-  const result = db
-    .get("bookmarks")
-    .push(model)
-    .last()
-    .write();
-
-  return result;
+  try {
+    const model = GetBookmark(bookmark);
+    const result = await repository.CreateBookmark(model);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const UpdateBookmark = async bookmark => {
-  const model = GetBookmark(bookmark);
-  const result = db
-    .get("bookmarks")
-    .find({ id: model.id })
-    .assign(model)
-    .write();
-  return result;
+  try {
+    const model = GetBookmark(bookmark);
+    const result = await repository.UpdateBookmark(model);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 
-//TODO: Lowdb remove functions seemms not to work so i need to find another db
-const RemoveBookmark = async param => {
-  const result = db
-    .get("bookmarks")
-    .remove({id: param})
-    .write();
-  return result;
+const RemoveBookmark = async id => {
+  try {
+    const result = await repository.RemoveBookmark(id);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const GetAllBookmarks = async () => {
-  return db.get("bookmarks").value();
+  try {
+    const result = await repository.GetAllBookmarks();
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const GetBookmark = bookmark => {
-  if (!bookmark.id) throw new Error("Bookmarks id is missing");
-  if (!bookmark.name) throw new Error("Bookmarks name is missing");
-  if (!bookmark.url) throw new Error("Bookmarks url is missing");
+  if(!bookmark.id) throw new Error("BookmarkMissingId");
+  if (typeof bookmark.id !== "string" || bookmark.id === "") throw new Error("BookmarkNotValidId");
+  if (!bookmark.name) throw new Error("BookmarkMissingName");
+  if (!bookmark.url) throw new Error("BookmarkMissingUrl");
 
   return new Bookmark(bookmark.id, bookmark.name, bookmark.url);
 };
 
 module.exports = {
-  GetAllBookMarks: GetAllBookmarks,
+  GetAllBookmarks,
   CreateBookmark,
   UpdateBookmark,
   RemoveBookmark

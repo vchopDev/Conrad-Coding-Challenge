@@ -2,10 +2,16 @@ const bookmarkService = require("../../services/bookmark");
 
 const GetAllBookmarks = async (req, res) => {
   try {
-    let result = await bookmarkService.GetAllBookMarks();
-    return res.status(200).json({ result : result})
+    let result = await bookmarkService.GetAllBookmarks();
+    res.status(200).send({ result: result });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    switch (error.message) {
+      case "BookmarkNotValidId":
+        return res.status(400).send({ error: "Bookmark id has a bad format." });
+      default:
+        res.status(500).send({ error: error.message });
+        break;
+    }
   }
 };
 
@@ -13,9 +19,9 @@ const CreateBookmark = async (req, res) => {
   try {
     const { bookmark } = req.body;
     let result = await bookmarkService.CreateBookmark(bookmark);
-    return res.status(200).json({ result : result})
+    res.status(200).send({ result: result });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).send({ error: error.message });
   }
 };
 
@@ -23,9 +29,9 @@ const UpdateBookmark = async (req, res) => {
   try {
     const { bookmark } = req.body;
     let result = await bookmarkService.UpdateBookmark(bookmark);
-    return res.status(200).json({ result : result})
+    res.status(200).send({ result: result });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).send({ error: error.message });
   }
 };
 
@@ -33,9 +39,16 @@ const RemoveBookmark = async (req, res) => {
   try {
     const { id } = req.params;
     let result = await bookmarkService.RemoveBookmark(id);
-    return res.status(200).json({ result : result})
+     res.status(200).send({ result: result });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    switch (error.message) {
+      case "MissingBookmark":
+        return res.status(400).send({ error: "The id recevied has no bookmark associated with." });
+        break;
+      default:
+        res.status(500).send({ error: error.message });
+        break;
+    }
   }
 };
 
@@ -44,4 +57,4 @@ module.exports = {
   CreateBookmark,
   UpdateBookmark,
   RemoveBookmark
-}
+};

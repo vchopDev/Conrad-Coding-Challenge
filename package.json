@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --config jest.config.js",
     "start": "nodemon ./src/index.js"
   },
   "repository": {
@@ -23,6 +23,8 @@
   "dependencies": {
     "axios": "^0.19.2",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-http": "^4.3.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
@@ -32,6 +34,7 @@
     "nodemon": "^2.0.2"
   },
   "devDependencies": {
+    "faker": "^4.1.0",
     "jest": "^25.2.0",
     "sinon": "^9.0.1",
     "supertest": "^4.0.2"
