@@ -19,9 +19,24 @@ const CreateBookmark = async (req, res) => {
   try {
     const { bookmark } = req.body;
     let result = await bookmarkService.CreateBookmark(bookmark);
-    res.status(200).send({ result: result });
+    return res.status(200).send({ result: result });
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    switch (error.message) {
+      case "BookmarkMissingId":
+        return res.status(400).json({ error: "Bookmark id is missing." });
+
+      case "BookmarkNotValidId":
+        return res.status(400).send({ error: "Bookmark id is in a valid format." });
+
+      case "BookmarkMissingName":
+        return res.status(400).send({ error: "Bookmark name is missing." });
+
+      case "BookmarkMissingUrl":
+        return res.status(400).send({ error: "Bookmark url is missing." });
+
+      default:
+        return res.status(500).send({ error: error.message });
+    }
   }
 };
 
@@ -31,7 +46,22 @@ const UpdateBookmark = async (req, res) => {
     let result = await bookmarkService.UpdateBookmark(bookmark);
     res.status(200).send({ result: result });
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    switch (error.message) {
+      case "BookmarkMissingId":
+        return res.status(400).json({ error: "Bookmark id is missing." });
+
+      case "BookmarkNotValidId":
+        return res.status(400).send({ error: "Bookmark id is in a valid format." });
+
+      case "BookmarkMissingName":
+        return res.status(400).send({ error: "Bookmark name is missing." });
+
+      case "BookmarkMissingUrl":
+        return res.status(400).send({ error: "Bookmark url is missing." });
+
+      default:
+        return res.status(500).send({ error: error.message });
+    }
   }
 };
 
@@ -39,7 +69,7 @@ const RemoveBookmark = async (req, res) => {
   try {
     const { id } = req.params;
     let result = await bookmarkService.RemoveBookmark(id);
-     res.status(200).send({ result: result });
+    res.status(200).send({ result: result });
   } catch (error) {
     switch (error.message) {
       case "MissingBookmark":

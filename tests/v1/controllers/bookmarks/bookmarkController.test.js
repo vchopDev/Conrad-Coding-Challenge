@@ -3,6 +3,7 @@ var request = require("supertest");
 const chai = require("chai");
 const { expect } = chai;
 const bodyParser = require("body-parser");
+const util = require("util");
 
 app.use(bodyParser.json());
 
@@ -31,8 +32,6 @@ const RemoveBookmark = async id => {
     .delete(`/v1/bookmarks/remove/${id}`)
     .set("Accept", "application/json");
 };
-
-beforeEach(() => {});
 
 describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
   describe("- BookmarkController", () => {
@@ -82,13 +81,12 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
 
       const bookmarks = await GetBookmarks();
       const { result } = bookmarks.body;
-      console.log(result);
+
       expect(bookmarks.status).to.be.equal(200);
       expect(result.length).to.be.equal(1);
 
-      const removeResult = await RemoveBookmark(data.id);
-      console.log(removeResult.body);
-      // expect(removeResult.status).to.be.equal(200);
+      const removeResult = await RemoveBookmark(data.bookmark.id);
+      expect(removeResult.status).to.be.equal(200);
 
       const { body } = removeResult;
       expect(body.result.length).to.be.equal(0);
@@ -96,11 +94,69 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
     });
 
     test("BookmarkController -> POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark id  ", async done => {
+      const data = { bookmark: { name: "test", url: "test" } };
+
+      const result = await CreateBookmark(data);
+      const { error } = result;
+      expect(result.status).to.be.equal(400);
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("Bookmark id is missing.");
+      done();
+    });
+
+    test("BookmarkController -> POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark name  ", async done => {
       const data = { bookmark: { id: "0000", url: "test" } };
 
       const result = await CreateBookmark(data);
+      const { error } = result;
       expect(result.status).to.be.equal(400);
-      expect(body.error.message).to.be.equal("Bookmark id has a bad format.");
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("Bookmark name is missing.");
+      done();
+    });
+
+    test("BookmarkController -> POST /v1/bookmarks/add should sould return 400 when bad payload is recieved, missing bookmark url  ", async done => {
+      const data = { bookmark: { id: "0000", name: "test" } };
+
+      const result = await CreateBookmark(data);
+      const { error } = result;
+      expect(result.status).to.be.equal(400);
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("Bookmark url is missing.");
+      done();
+    });
+
+
+   test("BookmarkController -> PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark id  ", async done => {
+      const data = { bookmark: { name: "test", url: "test" } };
+
+      const result = await UpdateBookmark(data);
+      const { error } = result;
+      expect(result.status).to.be.equal(400);
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("Bookmark id is missing.");
+      done();
+    });
+
+    test("BookmarkController -> PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark name  ", async done => {
+      const data = { bookmark: { id: "0000", url: "test" } };
+
+      const result = await UpdateBookmark(data);
+      const { error } = result;
+      expect(result.status).to.be.equal(400);
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("Bookmark name is missing.");
+      done();
+    });
+
+    test("BookmarkController -> PUT /v1/bookmarks/update should sould return 400 when bad payload is recieved, missing bookmark url  ", async done => {
+      const data = { bookmark: { id: "0000", name: "test" } };
+
+      const result = await UpdateBookmark(data);
+      const { error } = result;
+      expect(result.status).to.be.equal(400);
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("Bookmark url is missing.");
       done();
     });
 
@@ -118,8 +174,9 @@ describe("- CRUD TESTING RESPONSE STATUS - bookmark endpoints", () => {
       const removeResult = await RemoveBookmark(-1);
       expect(removeResult.status).to.be.equal(400);
 
-      const { body } = removeResult;
-      expect(body.error.message).to.be.equal("The id recevied has no bookmark associated with.");
+      const { error } = removeResult;
+      const errorResult = JSON.parse(error.text);
+      expect(errorResult.error).to.be.equal("The id recevied has no bookmark associated with.");
       done();
     });
   });

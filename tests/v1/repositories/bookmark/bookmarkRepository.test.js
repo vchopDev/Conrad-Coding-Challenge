@@ -15,34 +15,7 @@ describe("- BookmarkRepository", () => {
   beforeEach(() => {
     return ClearDB();
   });
-
-  test("- CreateBookmark should throw an Error when invalid data is passed -> Missing id", async () => {
-    const notvalidStubBookmark = {
-      id: undefined,
-      name: undefined,
-      url: undefined
-    };
-
-    expect(BookmarkRepository.CreateBookmark(notvalidStubBookmark)).to.be.rejectedWith("BookmarkMissingId");
-  });
-  test("- CreateBookmark should throw an Error when invalid data is passed -> Missing name", async () => {
-    const notvalidStubBookmark = {
-      id: faker.random.uuid(),
-      name: undefined,
-      url: undefined
-    };
-
-    expect(BookmarkRepository.CreateBookmark(notvalidStubBookmark)).to.be.rejectedWith("BookmarkMissingName");
-  });
-  test("- CreateBookmark should throw an Error when invalid data is passed -> Missing url", async () => {
-    const notvalidStubBookmark = {
-      id: faker.random.uuid(),
-      name: faker.name.findName(),
-      url: undefined
-    };
-    expect(BookmarkRepository.CreateBookmark(notvalidStubBookmark)).to.be.rejectedWith("BookmarkMissingUrl");
-  });
-
+  
   test("- CreateBookmark should create a new bookmark and return it", async () => {
     const validStubBookmark = {
       id: faker.random.uuid(),
