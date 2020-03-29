@@ -1,11 +1,12 @@
 const { Router } = require("express");
-const RepoController = require("../controllers/repositories/repositoryController");
-const ZenController = require("../controllers/zen/zenController");
-const BookmarkController = require("../controllers/bookmarks/bookmarkController");
+const RepoController = require("../GithubRepositories/controller");
+const ZenController = require("../zen/controller");
+const BookmarkController = require("../Bookmark/controller");
 const SecurityStragety = require("../../passport/securityStrategy");
 var router = Router();
+
 /**
- * @api {get} /v1/ Request Github Zen
+ * @api {get} /v1/  Github Zen
  * @apiName GetZen
  * @apiGroup Zen
  *
@@ -18,7 +19,7 @@ var router = Router();
  */
 router.get("/", ZenController.GetZen);
 /**
- * @api {get} /v1/repositories/?seach="example" Request Github Zen
+ * @api {get} /v1/repositories/?seach="example" Repositories
  * @apiName GetRepepositories
  * @apiGroup Github Repositories
  * @apiParam { String } search term to be searched
@@ -49,15 +50,18 @@ router.get("/", ZenController.GetZen);
  * 
  */
 router.get("/repositories", RepoController.GetRepositories);
+
 /**
- * @api {get} /v1/bookmarks/  Get Bookmarks
+ * @api {get} /v1/bookmarks/ Get bookmarks
  * @apiName Bookmarks
- * @apiGroup Get Bookmarks
- * @apiDescription This endpoint returns all bookmarks on db
+ * @apiGroup Bookmarks
+ * @apiDescription This endpoint returns all bookmarks on db. This endpoint requires authentication trough basic authentication.
+ * @apiParam (Login) {String} username Users username
+ * @apiParam (Login) {String} password Users password
  * @apiSuccessExample Success-Response:
  *  HTTP/1.1 200 OK
  *  {
-      "result": [
+      "[
         {
           "id": "000000000",
           "name": "vchoptesufdfsdfdsfut",
@@ -65,10 +69,139 @@ router.get("/repositories", RepoController.GetRepositories);
         }
       ]
     }
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Unauthorized
+*/
+/**  
+ * @api {post} /v1/bookmarks/ Post bookmark
+ * @apiGroup Bookmarks
+ * @apiDescription This endpoint creates a new bookmark and returns it. This endpoint requires authentication trough basic authentication.
+ * @apiParam (Login) {String} username Users username
+ * @apiParam (Login) {String} password Users password
+ * @apiParam (Body) {json} bookmark body parameter must be a json as follow sending a payload with one of it's properties empty must result in a error response:
+ *  {
+	    "bookmark" : {
+	      "id": 12,
+	      "name": "vushudhfudhupddasdasate",
+	      "fullname": "test/testsdsadsadupdate",
+	      "description": "Super test repository updated",
+	      "url": "https://test.com"
+      }
+    }
  * 
- */
+ * @apiSuccessExample Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+      "[
+        {
+          "id": "000000000",
+          "name": "vchoptesufdfsdfdsfut",
+          "url": "https://test.com"
+        }
+      ]
+    }
+ * @apiErrorExample Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ * @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark id is missing."
+    }
+     @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark name is missing."
+    }
+     @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark url is missing."
+    }
+*/
+/**  
+ * @api {put} /v1/bookmarks/:id Put bookmark
+ * @apiGroup Bookmarks
+ * @apiDescription This endpoint updates an existing bookmark and returns it. This endpoint requires authentication trough basic authentication.
+ * @apiParam (Login) {String} username Users username
+ * @apiParam (Login) {String} password Users password
+ * @apiParam (Id) {String} id Bookmarks id
+ * @apiParam (Body) {json} bookmark body parameter must be a json as follow sending a payload with one of it's properties empty must result in a error response:
+ *  {
+	    "bookmark" : {
+	      "name": "vushudhfudhupddasdasate",
+	      "fullname": "test/testsdsadsadupdate",
+	      "description": "Super test repository updated",
+	      "url": "https://test.com"
+      }
+    }
+ * 
+ * @apiSuccessExample Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+      "[
+        {
+          "id": "000000000",
+          "name": "vchoptesufdfsdfdsfut",
+          "url": "https://test.com"
+        }
+      ]
+    }
+ * @apiErrorExample Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ * @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark id is missing."
+    }
+     @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark name is missing."
+    }
+     @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark url is missing."
+    }
+     @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark id is in a valid format."
+    }
+*/
+/**  
+ * @api {delete} /v1/bookmarks/:id Delete bookmark
+ * @apiGroup Bookmarks
+ * @apiDescription This endpoint deletes an existing bookmark and returns the current db. This endpoint requires authentication trough basic authentication.
+ * @apiParam (Login) {String} username Users username
+ * @apiParam (Login) {String} password Users password
+ * @apiParam (Id) {String} id Bookmarks id
+ * @apiSuccessExample Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+      "[
+        {
+          "id": "000000000",
+          "name": "vchoptesufdfsdfdsfut",
+          "url": "https://test.com"
+        }
+      ]
+    }
+ * @apiErrorExample Error-Response:
+ *  HTTP/1.1 401 Unauthorized
+ * @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "Bookmark id is missing."
+    }
+     @apiErrorExample Error-Response:
+*   HTTP/1.1 404 Bad Request
+*   {
+      "error": "The id recevied has no bookmark associated with."
+    }
+*/
 router.get("/bookmarks", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.GetAllBookmarks);
-router.post("/bookmarks/add", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.CreateBookmark);
-router.put("/bookmarks/update", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.UpdateBookmark);
-router.delete("/bookmarks/remove/:id", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.RemoveBookmark);
+router.post("/bookmarks", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.CreateBookmark);
+router.put("/bookmarks/:id", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.UpdateBookmark);
+router.delete("/bookmarks/:id", SecurityStragety.authenticate("basic", { session: false }), BookmarkController.RemoveBookmark);
 module.exports = router;
